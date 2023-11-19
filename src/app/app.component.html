@@ -1,88 +1,22 @@
-<div class="chat-window">
-  <div *ngFor="let message of messages" class="message">
-    {{ message.content }}
-    <div *ngIf="message.sender === senderEnum.BOT && message.responseType === 'options'">
-      <button *ngFor="let option of message.responses" (click)="onUserResponse(message.id, option)">
-        {{ option.text }}
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<!-- <div class="panel-heading" style="text-align: center; margin-top: 30px">
+<div class="panel-heading" style="text-align: center; margin-top: 30px">
   <h3 class="panel-title">
     nAItingale
   </h3>
 </div>
-<div style="margin: 30px auto 30px auto; width: 900px; background: #F7F7F7; padding: 30px; border-radius: 10px">
+
+<div style="margin: 30px auto 30px auto; width: 800px; background: #F7F7F7; padding: 30px; border-radius: 10px">
   <div class="panel" id="chat">
     <div class="panel-body">
       <div class="chats">
-        <div class="chat">
-          <div class="chat-body" *ngIf="conversationSate$ | async">
-            <div class="chat-content">
-              <p>
-                👋 Hi!
-                <br>Mein Name ist nAItingale! Ich helfe dir, deine Reise einfach und schnell zu planen 🤗.
-                <br> Hast du schon eine Ahnung, wohin es bei dir geht?
-              </p>
-              <time class="chat-time" datetime="2015-07-01T11:37">11:37:08 am</time>
+        <div class="chat-window">
+          <div *ngFor="let message of messages" class="message">
+            <div [ngClass]="message.sender === senderEnum.BOT ? 'bot-message' : 'user-message'">
+              {{ message.content }}
             </div>
-          </div>
-        </div>
-        <div class="chat">
-          <div class="chat-body">
-            <div class="chat-content">
-              <button type="button" class="btn btn-primary" style="display: block; margin: 12px">Ja, ich habe schon ein genaues Ziel.
+            <div *ngIf="message.sender === senderEnum.BOT && message.responseType === 'options'">
+              <button *ngFor="let option of message.responses" (click)="onUserResponse(message.id, option)" type="button" class="btn btn-secondary" style="margin: 6px">
+                {{ option.text }}
               </button>
-              <button type="button" class="btn btn-primary" style="display: block; margin: 12px">Noch nicht, aber ich bin für alles
-                offen.
-              </button>
-              <button type="button" class="btn btn-primary" style="display: block; margin: 12px">Noch nicht, aber ich habe schon einen
-                groben Plan.
-              </button>
-              <time class="chat-time" datetime="2015-07-01T11:37">11:38:03 am</time>
-            </div>
-          </div>
-        </div>
-        <div class="chat chat-left">
-          <div class="chat-body">
-            <div class="chat-content">
-              <p>Noch nicht, aber ich bin für alles offen.</p>
-              <time class="chat-time" datetime="2015-07-01T11:39">11:39:57 am</time>
-            </div>
-          </div>
-        </div>
-        <div class="chat">
-          <div class="chat-body">
-            <div class="chat-content">
-              <p>
-                Alles klar, dann stelle ich dir gleich mal ein paar Fragen.
-                Für welche Kontinente interessierst du dich?
-              </p>
-              <time class="chat-time" datetime="2015-07-01T11:40">11:40:10 am</time>
-            </div>
-          </div>
-        </div>
-        <div class="chat">
-          <div class="chat-body">
-            <div class="chat-content">
-              <button type="button" class="btn btn-primary" style="margin-left: 12px">Nordamerika
-              </button>
-              <button type="button" class="btn btn-primary" style="margin-left: 12px">Südamerika
-              </button>
-              <button type="button" class="btn btn-primary" style="margin-left: 12px">Europa
-              </button>
-              <button type="button" class="btn btn-primary" style="margin-left: 12px">Afrika
-              </button>
-              <button type="button" class="btn btn-primary" style="margin-left: 12px">Australien
-              </button>
-              <button type="button" class="btn btn-primary" style="margin-left: 12px">Asien
-              </button>
-              <button type="button" class="btn btn-primary" style="margin-left: 12px">Antarktis
-              </button>
-              <time class="chat-time" datetime="2015-07-01T11:40">11:41:23 am</time>
             </div>
           </div>
         </div>
@@ -101,4 +35,3 @@
     </div>
   </div>
 </div>
- -->
