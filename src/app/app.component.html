@@ -1,4 +1,16 @@
-<div class="panel-heading" style="text-align: center; margin-top: 30px">
+<div class="chat-window">
+  <div *ngFor="let message of messages" class="message">
+    {{ message.content }}
+    <div *ngIf="message.sender === senderEnum.BOT && message.responseType === 'options'">
+      <button *ngFor="let option of message.responses" (click)="onUserResponse(message.id, option)">
+        {{ option.text }}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- <div class="panel-heading" style="text-align: center; margin-top: 30px">
   <h3 class="panel-title">
     nAItingale
   </h3>
@@ -8,7 +20,7 @@
     <div class="panel-body">
       <div class="chats">
         <div class="chat">
-          <div class="chat-body">
+          <div class="chat-body" *ngIf="conversationSate$ | async">
             <div class="chat-content">
               <p>
                 👋 Hi!
@@ -89,3 +101,4 @@
     </div>
   </div>
 </div>
+ -->
