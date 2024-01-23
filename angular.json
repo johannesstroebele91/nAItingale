@@ -63,19 +63,19 @@
 				"serve": {
 					"builder": "@angular-devkit/build-angular:dev-server",
 					"configurations": {
-						"production": {
-							"browserTarget": "nAItingale:build:production"
+            "production": {
+              "buildTarget": "nAItingale:build:production"
 						},
-						"development": {
-							"browserTarget": "nAItingale:build:development"
+            "development": {
+              "buildTarget": "nAItingale:build:development"
 						}
 					},
 					"defaultConfiguration": "development"
 				},
 				"extract-i18n": {
 					"builder": "@angular-devkit/build-angular:extract-i18n",
-					"options": {
-						"browserTarget": "nAItingale:build"
+          "options": {
+            "buildTarget": "nAItingale:build"
 					}
 				},
 				"test": {
