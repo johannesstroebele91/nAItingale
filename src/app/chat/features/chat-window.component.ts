@@ -1,108 +1,103 @@
-import { Component } from '@angular/core';
-import { Sender, Message, ResponseOption, selectedResponseOption } from 'src/app/shared/models/models';
-import { ChatService } from '../data-access/chat.service';
-import { CommonModule } from '@angular/common';
+import {Component} from '@angular/core';
+import {Message, Sender} from 'src/app/shared/models/models';
+import {ChatService} from '../data-access/chat.service';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-chat-window',
   standalone: true,
-  imports: [CommonModule],
-  template: `    
-  <div style="margin: 30px auto 30px auto; width: 800px; background: #F7F7F7; padding: 30px; border-radius: 10px">
-  <div class="panel" id="chat">
-    <div class="panel-body">
-      <div class="chats">
-        <div class="chat-window">
-          <div *ngFor="let message of messages" class="message">
-            <div [ngClass]="message.sender === senderEnum.BOT ? 'bot-message' : 'user-message'">
-              {{ message.content }}
-            </div>
-            <div *ngIf="message.sender === senderEnum.BOT && message.responseType === 'options'">
-              <button *ngFor="let option of message.responses" (click)="onUserResponse(message.id, option)" type="button" class="btn btn-secondary" style="margin: 6px">
-                {{ option.text }}
-              </button>
+  imports: [CommonModule, FormsModule],
+  template: `
+    <div style="margin: 30px auto 30px auto; width: 800px; background: #F7F7F7; padding: 30px; border-radius: 10px">
+      <div class="panel" id="chat">
+        <div class="panel-body">
+          <div class="chats">
+            <div class="chat-window">
+              <div *ngFor="let messageEntry of messageMap | keyvalue" class="message">
+                <div [ngClass]="messageEntry.value.sender === senderEnum.BOT ? 'bot-message' : 'user-message'">
+                  {{ messageEntry.value.content }}
+                </div>
+                <div
+                  *ngIf="messageEntry.value.responseType === 'options'">
+                  <button *ngFor="let option of messageEntry.value.responseOptions"
+                          (click)="onSelectResponseOption(option.messageKey, option.text)"
+                          type="button" class="btn btn-secondary" style="margin: 6px">
+                    {{ option.text }}
+                  </button>
+                </div>
+                <div *ngIf="messageEntry.value.responseType === 'input'">
+                  <form>
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Say something" [(ngModel)]="userInput"
+                             name="userInput" [ngModelOptions]="{standalone: true}">
+                      <span class="input-group-btn">
+                  <!--TODO improve later so no strange rerender occurs-->
+            <button class="btn btn-primary" type="button"
+                    (click)="onInputResponse(messageEntry.value.responseInput?.messageKey, userInput)">Send</button>
+                </span>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="panel-footer">
-      <form>
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Say something">
-          <span class="input-group-btn">
-            <button class="btn btn-primary" type="button">Send</button>
-          </span>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-    
   `,
-  styles: ``,
+  styles: [],
 })
 export class ChatWindowComponent {
   senderEnum = Sender;
-  messages: Message[] = [];
+  public messageMap!: Map<string, Message>;
+  userInput: string = '';
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService) {
+  }
 
   ngOnInit() {
-    this.chatService.getMessages().subscribe((messages) => {
-      this.messages = messages;
+    this.chatService.getMessages().subscribe((messageMap) => {
+      this.messageMap = new Map<string, Message>(messageMap);
     });
 
     // Initial bot message
-    this.chatService.sendMessage({
-      id: 'msg1',
-      content: 'Hast du schon eine Ahnung, wohin es bei dir geht?',
-      sender: Sender.BOT,
-      timestamp: new Date(),
-      responseType: 'options',
-      responses: [
-        {
-          id: 'a',
-          text: 'Ja, ich habe schon ein genaues Ziel!',
-        },
-        {
-          id: 'b',
-          text: 'Noch nicht, aber ich bin für alles offen!',
-        },
-        {
-          id: 'c',
-          text: 'Noch nicht, aber ich habe schon einen groben Plan!',
-        },
-      ],
-    });
+    // You may want to trigger an initial bot message here
   }
 
-  onUserResponse(messageId: string, option: ResponseOption) {
-    // Add user's choice to the conversation
-    this.chatService.sendMessage({
-      id: `user_${new Date().getTime()}`,
-      content: option.text,
-      sender: Sender.USER,
-      timestamp: new Date(),
-    });
+  onInputResponse(key: string | undefined, text: string) {
+    console.log('onInputResponse')
+    console.log(key)
+    console.log(text)
 
-    // Logic to handle the user's response and continue the conversation
-    // This could involve sending another message from the bot, making API calls, etc.
-
-    const newMessage = selectedResponseOption(messageId, option);
-    const errorMessage = {
-      id: `user_${new Date().getTime()}`,
-      content: 'There was an error',
-      sender: Sender.BOT,
-      timestamp: new Date(),
-    };
-
-    // Add user's choice to the conversation
-    if (!newMessage) {
-      this.chatService.sendMessage(errorMessage);
-    } else {
-      this.chatService.sendMessage(newMessage);
+    if (key !== undefined) {
+      this.chatService.addMessage(key, {
+        content: 'An welchen Zeitraum hast du gedacht?',
+        sender: Sender.BOT,
+        timestamp: new Date(),
+        responseType: 'input',
+        responseInput:
+          {
+            messageKey: '6',
+            text: ''
+          },
+      });
     }
   }
+
+  onSelectResponseOption(key: string, text: string) {
+    this.chatService.addMessage(key, {
+      content: 'Super. Wohin soll\'s denn gehen?',
+      sender: Sender.BOT,
+      timestamp: new Date(),
+      responseType: 'input',
+      responseInput:
+        {
+          messageKey: '4',
+          text: text
+        },
+    });
+  }
 }
+
